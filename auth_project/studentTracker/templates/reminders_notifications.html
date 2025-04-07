@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminders & Notifications</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{% url 'home' %}">Back to Dashboard</a>
+    </nav>
+
+    <h1>Reminders & Notifications</h1>
+    <p>Never miss a deadline with automated alerts.</p>
+
+    <div class="container">
+        <!-- Add Reminder Form -->
+        <div class="form-container">
+            <h2>📅 Add a Reminder</h2>
+            <form method="POST" action="{% url 'add_reminder' %}">
+                {% csrf_token %}
+                <label for="reminder_name">Reminder Name</label>
+                <input type="text" id="reminder_name" name="reminder_name" required>
+
+                <label for="reminder_date">Due Date</label>
+                <input type="datetime-local" id="reminder_date" name="reminder_date" required>
+
+                <button type="submit">Add Reminder</button>
+            </form>
+        </div>
+
+        <!-- Reminders List -->
+        <div class="table-container">
+            <h2>📝 Your Reminders</h2>
+            <table>
+                <tr>
+                    <th>Reminder</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                {% for reminder in reminders %}
+                <tr>
+                    <td>{{ reminder.reminder_name }}</td>
+                    <td>{{ reminder.reminder_date }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'update_reminder_status' reminder.id %}">
+                            {% csrf_token %}
+                            <input type="checkbox" name="completed" {% if reminder.completed %}checked{% endif %} onchange="this.form.submit()">
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'delete_reminder' reminder.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">No reminders added yet.</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

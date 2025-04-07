@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    {% load static %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('{% static "spu.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .motivational-text {
+            font-size: 40px;
+            font-weight: bold;
+            font-style: italic;
+            color: white;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+            width: 400px;
+            text-align: center;
+        }
+
+        input {
+            width: 90%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #3AF1DF;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #3AF1DF;
+            color: black;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        button:hover {
+            background-color: #04948C;
+            color: white;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .social-media-links {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-media-links img {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .social-media-links img:hover {
+            transform: scale(1.2);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-content p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .modal-content button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3AF1DF;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .modal-content button:hover {
+            background-color: #04948C;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="motivational-text">
+        Log in to take control of your academic success and well-being!
+    </div>
+
+    <div class="login-container">
+        <h2>Login</h2>
+
+        <!-- Error Message -->
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == "error" %}
+                    <p class="error-message">{{ message }}</p>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <!-- Social Media Links -->
+    <div class="social-media-links">
+        <a href="https://www.facebook.com/" target="_blank">
+            <img src="{% static 'facebook.png' %}" alt="Facebook">
+        </a>
+        <a href="https://www.instagram.com/" target="_blank">
+            <img src="{% static 'instagram.png' %}" alt="Instagram">
+        </a>
+    </div>
+
+    <!-- Modal for success message -->
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == "success" %}
+                <div id="successModal" class="modal" style="display: block;">
+                    <div class="modal-content">
+                        <p>{{ message }}</p>
+                        <button onclick="redirectToHome()">OK</button>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
+    <script>
+        function redirectToHome() {
+            window.location.href = "{% url 'home' %}";
+        }
+    </script>
+
+</body>
+</html>
+

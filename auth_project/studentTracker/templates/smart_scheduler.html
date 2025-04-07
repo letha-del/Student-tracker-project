@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Scheduler</title>
+    <style>
+        /* General Page Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #04948C;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            color: black;
+            margin-bottom: 20px;
+        }
+
+        /* Back Button Styling */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 20px;
+            color: black;
+            text-decoration: none;
+            padding: 10px 15px;
+            background: #04948C;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        /* Messages Styling */
+        .message {
+            margin: 20px auto;
+            padding: 15px;
+            width: 80%;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container, .table-container {
+            width: 48%;
+        }
+
+        h2 {
+            color: black;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        /* Form Styling */
+        form {
+            background: #04948C;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        form input, form select {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+        }
+
+        button {
+            background: white;
+            color: black;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+            color: white;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: #04948C;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        /* Checkbox Styling */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Delete Button */
+        .delete-btn {
+            background: #e74c3c;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .form-container, .table-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Back Button -->
+    <a href="{% url 'home' %}" class="back-btn"><< Back</a>
+
+    <h1>📅 Smart Scheduler</h1>
+
+    <!-- Message Display -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="container">
+        <!-- Left Side: Forms -->
+        <div class="form-container">
+            <h2>📝 Add a Class Schedule</h2>
+            <form method="POST" action="{% url 'add_class_schedule' %}">
+                {% csrf_token %}
+                {{ form_class_schedule.as_p }}
+                <button type="submit">Add Class</button>
+            </form>
+
+            <h2>📌 Add an Assignment</h2>
+            <form method="POST" action="{% url 'add_assignment' %}">
+                {% csrf_token %}
+                {{ form_assignment.as_p }}
+                <button type="submit">Add Assignment</button>
+            </form>
+        </div>
+
+        <!-- Right Side: Tables -->
+        <div class="table-container">
+            <h2>📚 Class Schedules</h2>
+            <table>
+                <tr>
+                    <th>Class Name</th>
+                    <th>Days</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
+                {% for schedule in class_schedules %}
+                <tr>
+                    <td>{{ schedule.class_name }}</td>
+                    <td>{{ schedule.days }}</td>
+                    <td>{{ schedule.time }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'delete_class_schedule' schedule.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4">No class schedules added yet.</td></tr>
+                {% endfor %}
+            </table>
+
+            <h2>📑 Assignments</h2>
+            <table>
+                <tr>
+                    <th>Assignment</th>
+                    <th>Due Date</th>
+                    <th>Category</th>
+                    <th>Completed</th>
+                    <th>Action</th>
+                </tr>
+                {% for assignment in assignments %}
+                <tr>
+                    <td>{{ assignment.assignment_name }}</td>
+                    <td>{{ assignment.due_date }}</td>
+                    <td>{{ assignment.category }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'update_assignment_status' assignment.id %}">
+                            {% csrf_token %}
+                            <input type="checkbox" name="completed" {% if assignment.completed %}checked{% endif %} onchange="this.form.submit()">
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'delete_assignment' assignment.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">No assignments added yet.</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
